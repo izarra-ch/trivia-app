@@ -1,21 +1,21 @@
 services:
   db:
     image: postgres:15
+    container_name: trivia_db
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
-      POSTGRES_DB: trivia_db
+      POSTGRES_DB: trivia
     ports:
-      - "5432:5432"
+      - "9000:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
   web:
     build: .
+    container_name: trivia_app
     ports:
       - "8000:8000"
-    environment:
-      DATABASE_URL: postgres://admin:admin@db:5432/trivia_db
     depends_on:
       - db
 

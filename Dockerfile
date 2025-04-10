@@ -1,13 +1,20 @@
 FROM python:3.11-slim
 
-# Set work directory
-WORKDIR /src
+# Creamos directorio de la app
+WORKDIR /app
 
 # Copiamos el archivos de requerimientos
 COPY requirements.txt .
 
 # Instalamos las dependencias
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+RUN pwd
+
+RUN ls
 
 # Copiar código de aplicación
-COPY src .
+COPY ./src ./src
+
+# Ejecutamos nuestra app
+CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
