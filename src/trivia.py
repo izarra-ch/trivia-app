@@ -30,17 +30,35 @@ class Question:
         return self.correct_answer == answer
 
 class Quiz:
-
-    def __init__(self):
+    """
+    Representa el juego de trivia que contiene múltiples preguntas y controla el flujo del juego.
+    """
+    
+    def __init__(self) -> None:
+        """
+        Inicializa una instancia de la clase Quiz con estados iniciales.
+        """
         self.questions = []
         self.current_question = 0
         self.correct_answers = 0
         self.incorrect_answers = 0
 
     def add_question(self, question: Question) -> None:
+        """
+        Agrega una pregunta a la lista del juego.
+
+        Args:
+            question (Question): Objeto de tipo Question a agregar.
+        """
         self.questions.append(question)
         
-    def get_next_question(self) -> Question:
+    def get_next_question(self) -> Question | None:
+        """
+        Obtiene la siguiente pregunta del juego.
+
+        Returns:
+            Question: La siguiente pregunta, o None si no hay más preguntas.
+        """
         if self.current_question < len(self.questions):
             question = self.questions[self.current_question]
             self.current_question += 1
@@ -48,6 +66,16 @@ class Quiz:
         return None
     
     def answer_question(self, question: Question, answer: str) -> bool:
+        """
+        Verifica la respuesta del jugador y actualiza los contadores de respuestas correctas e incorrectas.
+
+        Args:
+            question (Question): La pregunta actual.
+            answer (str): La respuesta proporcionada por el jugador.
+
+        Returns:
+            bool: True si la respuesta fue correcta, False en caso contrario.
+        """
       
         if question.is_correct(answer):
             self.correct_answers += 1
@@ -57,11 +85,19 @@ class Quiz:
             return False
           
     def show_question_results(self) -> None:
+        """
+        Muestra el resultado final del juego, total de preguntas respondidas, respuestas correctas e incorrectas del jugador.
+        """
+        
         print(f"Preguntas contestadas: {self.current_question}")
         print(f"Respuestas correctas: {self.correct_answers}")
         print(f"Respuestas incorrectas: {self.incorrect_answers}")
 
-    def start_quiz(self):
+    def start_quiz(self) -> None:
+        """
+        Inicia el juego de trivia mostrando las preguntas una a una en consola, solicitando la respuesta del jugador.
+        """
+        
         print("Bienvenido al juego de trivia!")
         print("Responde las siguientes preguntas seleccionando el número de la opción correcta.")
                 
