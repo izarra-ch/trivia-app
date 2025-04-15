@@ -1,5 +1,6 @@
 from typing import List
-
+from db import database
+from models import questions_table
 class Question:
     """
     Representa una pregunta con sus opciones y respuesta correcta
@@ -98,34 +99,59 @@ class Quiz:
         Inicia el juego de trivia mostrando las preguntas una a una en consola, solicitando la respuesta del jugador.
         """
         
-        print("Bienvenido al juego de trivia!")
-        print("Responde las siguientes preguntas seleccionando el número de la opción correcta.")
-                
-        while self.current_question < len(self.questions):
-            question = self.get_next_question()
-            if question:
-                print(f"Pregunta {self.current_question}: {question.question}")
-                for idx, option in enumerate(question.options):
-                    print(f"{idx + 1}) {option}")
-                
-                while True:
-                    try:
-                        answer_to_question = int(input("Tu respuesta: "))
-                        if answer_to_question in range(1, 5):
-                            break
-                        else:
-                            print("Ingrese el numero de opción correcta.")
-                    except ValueError:
-                      print("Entrada inválida. Ingrese el numero de las opciones.")
-                answer = question.options[answer_to_question-1]
-                      
-                if self.answer_question(question, answer):
-                    print("¡Correcto!")
+        try:
+            print("Bienvenido al juego de trivia!")
+            print("Responde las siguientes preguntas seleccionando el número de la opción correcta.")
+                    
+            while self.current_question < len(self.questions):
+                question = self.get_next_question()
+                if question:
+                    print(f"Pregunta {self.current_question}: {question.question}")
+                    for idx, option in enumerate(question.options):
+                        print(f"{idx + 1}) {option}")
+                    
+                    while True:
+                        try:
+                            answer_to_question = int(input("Tu respuesta: "))
+                            if answer_to_question in range(1, 5):
+                                break
+                            else:
+                                print("Ingrese el numero de opción correcta.")
+                        except ValueError:
+                          print("Entrada inválida. Ingrese el numero de las opciones.")
+                    answer = question.options[answer_to_question-1]
+                          
+                    if self.answer_question(question, answer):
+                        print("¡Correcto!")
+                    else:
+                        print("Incorrecto.")
                 else:
-                    print("Incorrecto.")
-            else:
-                break
+                    break
 
-        print("Juego terminado.")
-        self.show_question_results()
-        
+            print("Juego terminado.")
+            self.show_question_results()
+            
+        except KeyboardInterrupt:
+            print("\nJuego interrumpido por el usuario. ¡Hasta luego!")
+
+    async def load_questions(self, limit: int = 10) -> None:
+        """
+        Carga preguntas desde la base de datos
+
+        Args:
+            limit (int): Número de preguntas a obtener, por default un maximo de 10.
+        """
+        await database.connect()
+
+        query = questions_table.select().limit(limit)
+        rows = await database.fetch_all(query)
+
+        for row in rows:
+            question = Question(
+                question=row["question"],
+                options=row["options"],
+                correct_answer=row["correct_option"]
+            )
+            self.add_question(question)
+
+        await database.disconnect()
